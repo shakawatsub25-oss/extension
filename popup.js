@@ -43,7 +43,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const queueBtn = document.getElementById('queue-btn');
     queueBtn.addEventListener('click', function() {
-        console.log('Vehicles in Queue button clicked');
+        const aiInstructions = document.getElementById('ai-instructions').value;
+        const useAiDescription = document.getElementById('ai-description').checked;
+
+        // Send a message to the background script to start the scraping process.
+        chrome.runtime.sendMessage({
+            action: "startScraping",
+            aiInstructions: aiInstructions,
+            useAiDescription: useAiDescription
+        });
     });
 
     const verifyBtn = document.getElementById('verify-btn');
