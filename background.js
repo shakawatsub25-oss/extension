@@ -1,83 +1,34 @@
-// background.js
-// This script acts as the central coordinator for the extension.
+// Mock AI function to rewrite descriptions
+function rewriteDescription(originalText, instructions) {
+  let rewrittenText = `(AI Rewritten) ${originalText}`;
+  if (instructions) {
+    rewrittenText += `\n\n--- Instructions Applied ---\n${instructions}`;
+  }
+  return rewrittenText;
+}
 
-let vehicleDataStore = null;
-let aiInstructions = null;
-let useAiDescription = false;
+// Mock chatbot logic
+function getChatReply(message) {
+  const lowerCaseMessage = message.toLowerCase();
+  if (lowerCaseMessage.includes('hello') || lowerCaseMessage.includes('hi')) {
+    return 'Hello! How can I help you today?';
+  }
+  if (lowerCaseMessage.includes('help')) {
+    return 'I can help you with vehicle listings. What do you need assistance with?';
+  }
+  if (lowerCaseMessage.includes('price')) {
+    return 'I can help you find the price of a vehicle. Please provide the make and model.';
+  }
+  return "Sorry, I don't understand. Can you please rephrase?";
+}
 
-// Listen for messages from the popup script.
+// Listen for messages from popup.js and chatbot.js
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "startScraping") {
-        aiInstructions = request.aiInstructions;
-        useAiDescription = request.useAiDescription;
-
-        // Open a new tab with the target website.
-        chrome.tabs.create({ url: "https://www.eddyseverything.com/" }, (tab) => {
-            // Wait for the tab to be completely loaded before injecting the script.
-            const listener = (tabId, changeInfo, updatedTab) => {
-                if (tabId === tab.id && changeInfo.status === 'complete') {
-                    // Inject the scraper script.
-                    chrome.scripting.executeScript({
-                        target: { tabId: tab.id },
-                        files: ['scraper.js']
-                    });
-                    // Important: Remove the listener to avoid memory leaks.
-                    chrome.tabs.onUpdated.removeListener(listener);
-                }
-            };
-            chrome.tabs.onUpdated.addListener(listener);
-        });
-    }
-
-    // Listen for messages from the scraper script.
-    if (request.action === "scrapedData") {
-        vehicleDataStore = request.data;
-
-        // If AI description is requested, process it.
-        if (useAiDescription) {
-            // --- AI Rewriting Placeholder ---
-            vehicleDataStore.description = `(AI Instructions: ${aiInstructions}) \n\n${vehicleDataStore.description}`;
-        }
-
-        // Open Facebook Marketplace in a new tab.
-        chrome.tabs.create({ url: "https://www.facebook.com/marketplace/create/vehicle" }, (tab) => {
-            // Wait for the tab to be completely loaded.
-            const listener = (tabId, changeInfo, updatedTab) => {
-                if (tabId === tab.id && changeInfo.status === 'complete') {
-                    // Inject the poster script.
-                    chrome.scripting.executeScript({
-                        target: { tabId: tab.id },
-                        files: ['facebook_poster.js']
-                    }, () => {
-                        // After injecting, send the data to the content script.
-                        // A small delay helps ensure the content script's listener is ready.
-                        setTimeout(() => {
-                            chrome.tabs.sendMessage(tab.id, {
-                                action: "fillForm",
-                                data: vehicleDataStore
-                            });
-                        }, 500);
-                    });
-                    // Important: Remove the listener.
-                    chrome.tabs.onUpdated.removeListener(listener);
-                }
-            };
-            chrome.tabs.onUpdated.addListener(listener);
-        });
-    }
-
-    // Handle errors from the scraper.
-    if (request.action === "scrapingError") {
-        console.error("Scraping Error:", request.error);
-    }
-
-    // Handle errors from the poster.
-    if (request.action === "formFillError") {
-        console.error("Form Fill Error:", request.error);
-    }
-
-    // Confirmation that the form has been filled.
-    if (request.action === "formFilled") {
-        console.log("Facebook Marketplace form has been filled.");
-    }
+  if (request.action === 'rewrite') {
+    const rewritten = rewriteDescription(request.text, request.instructions);
+    sendResponse({ rewrittenText: rewritten });
+  } else if (request.action === 'chat') {
+    const reply = getChatReply(request.text);
+    sendResponse({ reply: reply });
+  }
 });

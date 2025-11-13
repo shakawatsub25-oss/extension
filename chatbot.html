@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Chatbot</title>
+  <style>
+    body { font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; margin: 0; }
+    #chat-history { flex-grow: 1; padding: 20px; overflow-y: auto; border-bottom: 1px solid #ccc; }
+    #chat-input { display: flex; padding: 10px; }
+    #chat-input input { flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    #chat-input button { padding: 10px 20px; margin-left: 10px; background-color: #1976d2; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .user-message { text-align: right; margin-bottom: 10px; }
+    .bot-message { text-align: left; margin-bottom: 10px; color: #1976d2; }
+  </style>
+</head>
+<body>
+  <div id="chat-history"></div>
+  <div id="chat-input">
+    <input type="text" id="user-input" placeholder="Type your message...">
+    <button id="send-button">Send</button>
+  </div>
+  <script src="chatbot.js"></script>
+</body>
+</html>
