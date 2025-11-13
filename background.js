@@ -1,83 +1,31 @@
-// background.js
-// This script acts as the central coordinator for the extension.
+// Mock chatbot logic for eddyseverything.com
+function getChatReply(message) {
+  const lowerCaseMessage = message.toLowerCase();
 
-let vehicleDataStore = null;
-let aiInstructions = null;
-let useAiDescription = false;
+  if (lowerCaseMessage.includes('hello') || lowerCaseMessage.includes('hi')) {
+    return "Hello! Welcome to Eddy's Everything. How can I assist you today?";
+  }
+  if (lowerCaseMessage.includes('about')) {
+    return "Eddy's Everything is a premier dealership for high-quality used vehicles. We pride ourselves on customer satisfaction.";
+  }
+  if (lowerCaseMessage.includes('contact') || lowerCaseMessage.includes('phone') || lowerCaseMessage.includes('address')) {
+    return "You can contact us at (123) 456-7890 or visit us at 123 Main St, Anytown, USA.";
+  }
+  if (lowerCaseMessage.includes('hours')) {
+    return "Our business hours are Monday to Friday, 9 AM to 6 PM, and Saturday, 10 AM to 4 PM.";
+  }
+  if (lowerCaseMessage.includes('inventory') || lowerCaseMessage.includes('cars')) {
+    return "We have a wide range of vehicles. You can browse our full inventory on our website.";
+  }
 
-// Listen for messages from the popup script.
+  return "I'm sorry, I can't answer that. For more information, please visit our website or contact us directly.";
+}
+
+// Listen for messages from chatbot.js
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "startScraping") {
-        aiInstructions = request.aiInstructions;
-        useAiDescription = request.useAiDescription;
-
-        // Open a new tab with the target website.
-        chrome.tabs.create({ url: "https://www.eddyseverything.com/" }, (tab) => {
-            // Wait for the tab to be completely loaded before injecting the script.
-            const listener = (tabId, changeInfo, updatedTab) => {
-                if (tabId === tab.id && changeInfo.status === 'complete') {
-                    // Inject the scraper script.
-                    chrome.scripting.executeScript({
-                        target: { tabId: tab.id },
-                        files: ['scraper.js']
-                    });
-                    // Important: Remove the listener to avoid memory leaks.
-                    chrome.tabs.onUpdated.removeListener(listener);
-                }
-            };
-            chrome.tabs.onUpdated.addListener(listener);
-        });
-    }
-
-    // Listen for messages from the scraper script.
-    if (request.action === "scrapedData") {
-        vehicleDataStore = request.data;
-
-        // If AI description is requested, process it.
-        if (useAiDescription) {
-            // --- AI Rewriting Placeholder ---
-            vehicleDataStore.description = `(AI Instructions: ${aiInstructions}) \n\n${vehicleDataStore.description}`;
-        }
-
-        // Open Facebook Marketplace in a new tab.
-        chrome.tabs.create({ url: "https://www.facebook.com/marketplace/create/vehicle" }, (tab) => {
-            // Wait for the tab to be completely loaded.
-            const listener = (tabId, changeInfo, updatedTab) => {
-                if (tabId === tab.id && changeInfo.status === 'complete') {
-                    // Inject the poster script.
-                    chrome.scripting.executeScript({
-                        target: { tabId: tab.id },
-                        files: ['facebook_poster.js']
-                    }, () => {
-                        // After injecting, send the data to the content script.
-                        // A small delay helps ensure the content script's listener is ready.
-                        setTimeout(() => {
-                            chrome.tabs.sendMessage(tab.id, {
-                                action: "fillForm",
-                                data: vehicleDataStore
-                            });
-                        }, 500);
-                    });
-                    // Important: Remove the listener.
-                    chrome.tabs.onUpdated.removeListener(listener);
-                }
-            };
-            chrome.tabs.onUpdated.addListener(listener);
-        });
-    }
-
-    // Handle errors from the scraper.
-    if (request.action === "scrapingError") {
-        console.error("Scraping Error:", request.error);
-    }
-
-    // Handle errors from the poster.
-    if (request.action === "formFillError") {
-        console.error("Form Fill Error:", request.error);
-    }
-
-    // Confirmation that the form has been filled.
-    if (request.action === "formFilled") {
-        console.log("Facebook Marketplace form has been filled.");
-    }
+  if (request.action === 'chat') {
+    const reply = getChatReply(request.text);
+    sendResponse({ reply: reply });
+  }
+  return true; // Keep the message channel open for async response
 });
