@@ -1,110 +1,106 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vehicle Scraper and Lister</title>
-    <link rel="stylesheet" href="style.css">
+  <title>Vehicle Scraper and Lister</title>
+  <link rel="stylesheet" type="text/css" href="popup.css">
 </head>
-<body>
-    <div class="container">
-        <header>
-            <div class="left-header">
-                <select id="theme-select">
-                    <option value="white">Theme: White</option>
-                    <option value="dark">Theme: Dark</option>
-                </select>
-            </div>
-            <div class="right-header">
-                <select id="language-select">
-                    <option value="english">English</option>
-                    <option value="italian" disabled>Italian (coming soon)</option>
-                </select>
-                <button id="ai-chatbot-btn">AI Chatbot</button>
-            </div>
-        </header>
+<body class="theme-white">
 
-        <div class="title-section">
-            <button id="help-btn">NEED HELP? CLICK HERE!</button>
-            <h2>Vehicle Scraper and Lister</h2>
-            <span class="settings-icon">&#9881;</span>
-        </div>
-
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="vehicle-category">Vehicle Category</label>
-                <select id="vehicle-category">
-                    <option value="car-truck">Car/Truck</option>
-                    <option value="motorbike" disabled>Motorbike (coming soon)</option>
-                    <option value="rv" disabled>RV (coming soon)</option>
-                    <option value="boat" disabled>Boat (coming soon)</option>
-                    <option value="atv" disabled>ATV (coming soon)</option>
-                    <option value="real-estate" disabled>Real Estate (coming soon)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="emoji">Emoji</label>
-                <select id="emoji">
-                    <option value="🙌">🙌</option>
-                    <!-- Add other emojis as needed -->
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="where-to-post">Where to Post</label>
-                <select id="where-to-post">
-                    <option value="fb-marketplace">FB Marketplace</option>
-                    <option value="fb-group" disabled>FB Group (coming soon)</option>
-                    <option value="fb-profile-page" disabled>FB profile/page (coming soon)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="distance">Distance</label>
-                <select id="distance">
-                    <option value="miles">Miles</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="how-to-post">How To Post</label>
-                <select id="how-to-post">
-                    <option value="post-directly">Post directly to FB</option>
-                    <option value="add-to-queue">Add to Queue</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="ai-instructions">Add A.I Instructions</label>
-            <textarea id="ai-instructions" rows="4" placeholder="Write your A.I Instructions"></textarea>
-        </div>
-
-        <div class="checkbox-group">
-            <input type="checkbox" id="ai-description" checked>
-            <label for="ai-description">A.I. Written description</label>
-        </div>
-        <div class="checkbox-group">
-            <input type="checkbox" id="dealership-description">
-            <label for="dealership-description">Add dealership vehicle description</label>
-        </div>
-        <div class="checkbox-group">
-            <input type="checkbox" id="add-mileage">
-            <label for="add-mileage">Add Mileage</label>
-        </div>
-
-        <button id="queue-btn">Vehicles in Queue</button>
-
-        <div class="credentials">
-            <div class="form-group">
-                <label for="user-id">User ID</label>
-                <input type="text" id="user-id" placeholder="Enter your user ID">
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter your password">
-            </div>
-        </div>
-
-        <button id="verify-btn">Verify</button>
+  <header class="header">
+    <div class="theme-selector">
+      <select id="theme">
+        <option value="white">Theme: White</option>
+        <option value="dark">Theme: Dark</option>
+      </select>
     </div>
-    <script src="popup.js"></script>
+    <div class="top-right-options">
+      <select id="language">
+        <option value="en">English</option>
+        <option value="it" disabled>Italian (coming soon)</option>
+      </select>
+      <button id="ai-chatbot">AI Chatbot</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="title-bar">
+        <h2>Vehicle Scraper and Lister</h2>
+        <button id="settings" class="icon-button">⚙️</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="vehicle-category">Vehicle Category</label>
+        <select id="vehicle-category">
+          <option value="car-truck">Car/Truck</option>
+          <option value="motorbike" disabled>Motorbike (coming soon)</option>
+          <option value="rv" disabled>RV (coming soon)</option>
+          <option value="boat" disabled>Boat (coming soon)</option>
+          <option value="atv" disabled>ATV (coming soon)</option>
+          <option value="real-estate" disabled>Real Estate (coming soon)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="emoji">Emoji</label>
+        <select id="emoji">
+            <option value="🤝">🤝</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="where-to-post">Where to Post</label>
+        <select id="where-to-post">
+          <option value="fb-marketplace">FB Marketplace</option>
+          <option value="fb-group" disabled>FB Group (coming soon)</option>
+          <option value="fb-profile-page" disabled>FB profile/page (coming soon)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="distance">Distance</label>
+        <select id="distance">
+            <option value="miles">Miles</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="how-to-post">How To Post</label>
+        <select id="how-to-post">
+          <option value="direct">Post directly to FB</option>
+          <option value="queue">Add to Queue</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="ai-instructions">Add A.I Instructions</label>
+      <textarea id="ai-instructions" placeholder="e.g., Make the description sound luxurious. Mention the low mileage."></textarea>
+    </div>
+
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="ai-description" checked> A.I. Written description</label>
+      <label><input type="checkbox" id="dealership-description"> Add dealership vehicle description</label>
+      <label><input type="checkbox" id="add-mileage"> Add Mileage</label>
+    </div>
+
+    <button id="vehicles-in-queue" class="orange-button">Vehicles in Queue</button>
+
+    <div class="credentials">
+        <div class="form-group">
+            <label for="user-id">User ID</label>
+            <input type="text" id="user-id" placeholder="Enter your user ID">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password">
+        </div>
+    </div>
+
+    <button id="verify" class="blue-button">Verify</button>
+
+  </div>
+
+  <script src="popup.js"></script>
 </body>
 </html>

@@ -1,44 +1,46 @@
-// facebook_poster.js
-// This script is injected into the Facebook Marketplace 'create new listing' page.
-// It programmatically fills in the form fields with the vehicle data.
+// This script will run on Facebook Marketplace to auto-fill the listing form.
 
-// This function will be called by the background script to start the posting process.
-function fillMarketplaceForm(vehicleData) {
+// Listen for a message from the background script containing the vehicle data
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'fillFacebookForm') {
+    console.log('Received data to fill Facebook form:', request.data);
+
+    // This is a simplified example. The actual selectors on Facebook Marketplace
+    // are complex and may change. They would need to be carefully identified.
+    const selectors = {
+      title: 'input[aria-label="Title"]',
+      price: 'input[aria-label="Price"]',
+      description: 'textarea[aria-label="Description"]',
+      // ... other selectors for category, photos, etc.
+    };
+
     try {
-        // --- Form Filling Logic ---
-        // NOTE: These selectors are GENERIC and may need to be adjusted if Facebook changes its Marketplace UI.
+      // Helper function to set value and dispatch events to simulate user input
+      const fillInput = (selector, value) => {
+        const element = document.querySelector(selector);
+        if (element && value) {
+          element.value = value;
+          element.dispatchEvent(new Event('input', { bubbles: true }));
+          element.dispatchEvent(new Event('change', { bubbles: true }));
+        } else {
+          console.warn(`Could not find element for selector: ${selector}`);
+        }
+      };
 
-        // Title
-        const titleInput = document.querySelector('input[aria-label="Title"]');
-        if (titleInput) titleInput.value = vehicleData.title;
+      fillInput(selectors.title, request.data.title);
+      fillInput(selectors.price, request.data.price);
+      fillInput(selectors.description, request.data.rewrittenDescription);
 
-        // Price
-        const priceInput = document.querySelector('input[aria-label="Price"]');
-        if (priceInput) priceInput.value = vehicleData.price;
+      // Photo upload is more complex and would require handling the file input element.
+      // This part is left as a placeholder.
+      console.log('Form filling complete (simulated).');
 
-        // Description
-        const descriptionInput = document.querySelector('textarea[aria-label="Description"]');
-        if (descriptionInput) descriptionInput.value = vehicleData.description;
-
-        // For the image, we can't programmatically set the value of a file input.
-        // This part will require the user to manually select the image.
-        // We can, however, alert the user to do so.
-        alert('Please manually upload the vehicle image.');
-
-
-        // --- Confirmation ---
-        // Let the background script know that the form has been filled.
-        chrome.runtime.sendMessage({ action: "formFilled" });
+      sendResponse({ success: true });
 
     } catch (error) {
-        // Report any errors to the background script.
-        chrome.runtime.sendMessage({ action: "formFillError", error: error.message });
+      console.error('Error auto-filling Facebook form:', error);
+      sendResponse({ success: false, error: error.message });
     }
-}
-
-// Listen for a message from the background script to start filling the form.
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "fillForm") {
-        fillMarketplaceForm(request.data);
-    }
+  }
+  return true;
 });
