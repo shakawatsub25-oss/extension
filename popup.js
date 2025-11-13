@@ -1,61 +1,66 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const themeSelect = document.getElementById('theme-select');
+  const themeSelector = document.getElementById('theme');
+  const body = document.body;
 
-    // Load saved theme from storage and apply it
-    chrome.storage.sync.get('theme', function(data) {
-        if (data.theme === 'dark') {
-            document.body.classList.add('dark');
-            themeSelect.value = 'dark';
+  // Load saved theme from storage and apply it
+  chrome.storage.sync.get('theme', function(data) {
+    if (data.theme) {
+      body.classList.remove('theme-white', 'theme-dark');
+      body.classList.add(`theme-${data.theme}`);
+      themeSelector.value = data.theme;
+    }
+  });
+
+  // Event listener for theme change
+  themeSelector.addEventListener('change', function() {
+    const selectedTheme = themeSelector.value;
+    body.classList.remove('theme-white', 'theme-dark');
+    body.classList.add(`theme-${selectedTheme}`);
+
+    // Save the selected theme to storage
+    chrome.storage.sync.set({theme: selectedTheme});
+  });
+
+  // Open AI Chatbot page in a new tab
+  const aiChatbotButton = document.getElementById('ai-chatbot');
+  aiChatbotButton.addEventListener('click', function() {
+    chrome.tabs.create({ url: 'chatbot.html' });
+  });
+
+  // Start the scraping process when the "Vehicles in Queue" button is clicked
+  const vehiclesInQueueButton = document.getElementById('vehicles-in-queue');
+  vehiclesInQueueButton.addEventListener('click', function() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+      if (!tabs[0]) {
+        alert('Error: No active tab found.');
+        return;
+      }
+
+      // Send a message to the content script to get all vehicle links
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'scrapeVehicleLinks' }, function(response) {
+        if (chrome.runtime.lastError) {
+          alert('Could not connect to the page. Make sure you are on eddyseverything.com and refresh the page.');
+          return;
         }
-    });
 
-    themeSelect.addEventListener('change', function() {
-        if (themeSelect.value === 'dark') {
-            document.body.classList.add('dark');
-            // Save the theme preference to storage
-            chrome.storage.sync.set({theme: 'dark'});
+        if (response && response.vehicleLinks && response.vehicleLinks.length > 0) {
+          // Send the links and AI instructions to the background script to start the processing queue
+          const aiInstructions = document.getElementById('ai-instructions').value;
+          chrome.runtime.sendMessage({
+            action: 'startQueue',
+            vehicleLinks: response.vehicleLinks,
+            aiInstructions: aiInstructions
+          });
+          alert(`Found ${response.vehicleLinks.length} vehicles. Starting the posting process in the background.`);
         } else {
-            document.body.classList.remove('dark');
-            // Save the theme preference to storage
-            chrome.storage.sync.set({theme: 'white'});
+          alert('No vehicle links found on this page.');
         }
+      });
     });
+  });
 
-    // Placeholder for language selection functionality
-    const languageSelect = document.getElementById('language-select');
-    languageSelect.addEventListener('change', function() {
-        // Language change logic will be implemented here
-        console.log('Language changed to:', languageSelect.value);
-    });
-
-    // Placeholder for AI Chatbot button functionality
-    const aiChatbotBtn = document.getElementById('ai-chatbot-btn');
-    aiChatbotBtn.addEventListener('click', function() {
-        // AI Chatbot logic will be implemented here
-        console.log('AI Chatbot button clicked');
-    });
-
-    // Placeholder for other button functionalities
-    const helpBtn = document.getElementById('help-btn');
-    helpBtn.addEventListener('click', function() {
-        console.log('Help button clicked');
-    });
-
-    const queueBtn = document.getElementById('queue-btn');
-    queueBtn.addEventListener('click', function() {
-        const aiInstructions = document.getElementById('ai-instructions').value;
-        const useAiDescription = document.getElementById('ai-description').checked;
-
-        // Send a message to the background script to start the scraping process.
-        chrome.runtime.sendMessage({
-            action: "startScraping",
-            aiInstructions: aiInstructions,
-            useAiDescription: useAiDescription
-        });
-    });
-
-    const verifyBtn = document.getElementById('verify-btn');
-    verifyBtn.addEventListener('click', function() {
-        console.log('Verify button clicked');
-    });
+  const verifyButton = document.getElementById('verify');
+  verifyButton.addEventListener('click', function() {
+    alert('Verification functionality will be implemented later.');
+  });
 });
