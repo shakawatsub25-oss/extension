@@ -21,20 +21,21 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.storage.sync.set({theme: selectedTheme});
   });
 
-  // Placeholder for other functionalities
+  // Open AI Chatbot page in a new tab
   const aiChatbotButton = document.getElementById('ai-chatbot');
   aiChatbotButton.addEventListener('click', function() {
-    alert('AI Chatbot functionality will be implemented later.');
+    chrome.tabs.create({ url: 'chatbot.html' });
+  });
+
+  // Open Vehicles in Queue page in a new tab
+  const vehiclesInQueueButton = document.getElementById('vehicles-in-queue');
+  vehiclesInQueueButton.addEventListener('click', function() {
+    chrome.tabs.create({ url: 'queue.html' });
   });
 
   const verifyButton = document.getElementById('verify');
   verifyButton.addEventListener('click', function() {
     alert('Verification functionality will be implemented later.');
-  });
-
-  const vehiclesInQueueButton = document.getElementById('vehicles-in-queue');
-  vehiclesInQueueButton.addEventListener('click', function() {
-    alert('Vehicles in Queue functionality will be implemented later.');
   });
 
 });
